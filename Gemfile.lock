@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     capi-sous (0.0.1)
-      capistrano (>= 2.13.5)
+      capistrano (>= 2.5.9)
 
 GEM
   remote: http://rubygems.org/

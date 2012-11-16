@@ -20,9 +20,8 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
   s.extra_rdoc_files = [
-     "README.rdoc"
+     "README.md"
   ]
   
   s.add_dependency "capistrano", ">= 2.5.9"
-  s.add_dependency "capistrano-ext", ">= 1.2.1"
 end
