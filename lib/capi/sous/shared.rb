@@ -1,4 +1,6 @@
 #http://railscasts.com/episodes/337-capistrano-recipes
+require 'capistrano'
+require 'capistrano/cli'
 require 'etc'
 
 def template(from, to)
@@ -13,12 +15,6 @@ end
 
 Capistrano::Configuration.instance.load do
 
-  # alias_method :original_sudo, :sudo
-  def sudo
-    logger.info "Using sudo did you include with_sudo task?" unless exists?(:sudo_user)
-    super
-  end
-
   namespace :deploy do
     desc "Install everything onto the server"
     task :install, depends: ["with_sudo"] do
@@ -31,3 +27,5 @@ Capistrano::Configuration.instance.load do
     set :user, sudo_user
   end
 end
+
+Dir.glob(File.join(File.dirname(__FILE__), '/recipes/*.rb')).sort.each { |f| load f }
