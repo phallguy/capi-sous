@@ -5,7 +5,6 @@ require 'etc'
 
 def template(from, to)
   erb = File.read(File.expand_path("../templates/#{from}", __FILE__))
-  logger.info user
   put ERB.new(erb).result(binding), to
 end
 
@@ -19,6 +18,7 @@ Capistrano::Configuration.instance.load do
     desc "Install everything onto the server"
     task :install, depends: ["with_sudo"] do
       run "#{sudo} apt-get -y update"
+      run "#{sudo} apt-get -y install build-essential gcc libxml2-dev libxslt-dev"
     end
   end
 
