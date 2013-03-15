@@ -3,15 +3,19 @@ Capistrano::Configuration.instance.load do
   namespace :redis do
     desc "Install Memcached"
     task :install, roles: [:redis], on_no_matching_servers: :continue do
-      run "#{sudo} apt-get install redis-server"
+      if Capistrano::CLI.ui.ask("Install memcached? (\"yes\" to install)") == "yes"
+        run "#{sudo} apt-get install redis-server"
+      end
     end
     after "deploy:install", "redis:install"
 
     desc "Setup Memcached"
     task :setup, roles: [:redis], on_no_matching_servers: :continue do
-      template "redis.erb", "/tmp/redis.conf"
-      run "#{sudo} mv /tmp/redis.conf /etc/redis/redis.conf"
-      restart
+      if Capistrano::CLI.ui.ask("Create redis default config? (\"yes\" to install)") == "yes"
+        template "redis.erb", "/tmp/redis.conf"
+        run "#{sudo} mv /tmp/redis.conf /etc/redis/redis.conf"
+        restart
+      end
     end
     after "deploy:setup", "redis:setup"
 

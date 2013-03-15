@@ -23,6 +23,7 @@ Capistrano::Configuration.instance.load do
   end
 
   task :with_sudo do
+    set :use_sudo, true
     set :sudo_user, fetch(:sudo_user,Etc.getlogin)
     set :user, sudo_user
   end

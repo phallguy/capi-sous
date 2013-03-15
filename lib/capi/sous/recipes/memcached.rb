@@ -5,15 +5,19 @@ Capistrano::Configuration.instance.load do
   namespace :memcached do
     desc "Install Memcached"
     task :install, roles: [:memcached], on_no_matching_servers: :continue do
-      run "#{sudo} apt-get install memcached"
+      if Capistrano::CLI.ui.ask("Install memcached? (\"yes\" to install)") == "yes"
+        run "#{sudo} apt-get install memcached"
+      end
     end
     after "deploy:install", "memcached:install"
 
     desc "Setup Memcached"
     task :setup, roles: [:memcached], on_no_matching_servers: :continue do
-      template "memcached.erb", "/tmp/memcached.conf"
-      run "#{sudo} mv /tmp/memcached.conf /etc/memcached.conf"
-      restart
+      if Capistrano::CLI.ui.ask("Create memcached default config? (\"yes\" to install)") == "yes"
+        template "memcached.erb", "/tmp/memcached.conf"
+        run "#{sudo} mv /tmp/memcached.conf /etc/memcached.conf"
+        restart
+      end
     end
     after "deploy:setup", "memcached:setup"
 
