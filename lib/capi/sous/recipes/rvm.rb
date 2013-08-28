@@ -1,3 +1,5 @@
+require 'rvm/capistrano'
+
 Capistrano::Configuration.instance.load do
 
 after 'deploy:install:update_system', 'rvm:install_ruby'
