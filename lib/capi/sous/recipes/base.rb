@@ -13,6 +13,9 @@ set_default( :application_path ){ "#{application}_#{deploy_env}" }
 set_default( :safe_application_path ){ application_path.gsub(/[^a-z0-9]/, '_') }
 set( :deploy_to ){ "#{deploy_root}/apps/#{safe_application_path}" }
 
+set_default( :vpc_domain_name ){ "vpc.#{domain_name}" }
+
+
 
 namespace :deploy do
 

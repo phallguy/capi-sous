@@ -4,6 +4,8 @@ set_default :search_indices do
   ENV["CLASS"] || "Item"
 end
 
+set_default( :elasticsearch_prefix ){ "#{deploy_env}_" }
+
 namespace :search do
 
   def indices
