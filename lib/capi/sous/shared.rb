@@ -4,9 +4,6 @@ require 'capistrano/cli'
 require 'etc'
 
 def template(from, to)
-
-  rails_root = File.expand_path("..",ENV["BUNDLE_GEMFILE"])
-
   rails_path = File.join( rails_root, "config/recipes/templates", from )
   sous_path = File.expand_path("../templates/#{from}", __FILE__)
 
@@ -25,9 +22,16 @@ def remote_file_exists?(full_path)
 end
 
 
-if Capistrano::Configuration.instance
-  Capistrano::Configuration.instance.load_paths << File.dirname(__FILE__)
+unless Capistrano::Configuration.instance
+  raise "Capi-sous requires Capistrano 2.0 or later."
 end
+
+Capistrano::Configuration.instance.load_paths << File.dirname(__FILE__)
+
+Capistrano::Configuration.instance.load do
+  set :rails_root, File.expand_path("..",ENV["BUNDLE_GEMFILE"])  
+end
+
 
 module Capi::Sous
   module Configuration

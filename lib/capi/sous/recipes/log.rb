@@ -9,7 +9,7 @@ namespace :log do
     run "#{sudo} mv -f /tmp/logrotate /etc/logrotate.d/#{safe_application_path}"
 
   end
-  after "deploy:setup", "logs:setup"  
+  after "deploy:setup", "log:setup"  
 
   # desc "tail production log files" 
   # task :tail, :roles => :app do
