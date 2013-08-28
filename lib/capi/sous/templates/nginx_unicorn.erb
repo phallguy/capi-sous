@@ -5,7 +5,8 @@ upstream <%= safe_application_path %>_unicorn {
 <% if use_ssl %>
 # Force SSL only
 server {
-  server_name <%= domain_name %>;
+  server_name <%= domain_name %> *.<%= domain_name %>;
+  listen <%= ssl_ip_address ? "#{ssl_ip_address}:" : "" %>80;
   return 302 https://<%= domain_name %>$request_uri;
 }
 <% end %>
@@ -15,10 +16,8 @@ server {
   listen <%= ssl_ip_address ? "#{ssl_ip_address}:" : "" %>443 ssl;
   ssl_certificate       certificates/<%= safe_application_path %>/server.crt;
   ssl_certificate_key   certificates/<%= safe_application_path %>/server.key;
-
-
   <% else %>
-#  listen 80 default deferred;
+#  listen <%= ssl_ip_address ? "#{ssl_ip_address}:" : "" %>80 default deferred;
   <% end %>
 
   server_name <%= domain_name %>;
