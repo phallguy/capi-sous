@@ -1,5 +1,7 @@
 Capistrano::Configuration.instance.load do
 
+load "config/recipes/settings"
+
 set_default :vpc_domain_name do
   "vpc.#{domain_name}"
 end
@@ -8,11 +10,7 @@ set_default :elasticsearch_prefix do
   "#{deploy_env}_"
 end
 
-setting_prompts = 
-{
-  segmentio_api_key: "Segment IO API Key: ",
-  segmentio_secret: "Segment IO Secret: "
-}
+
 
 setting_prompts.each do |k,v|
   set_default k do
