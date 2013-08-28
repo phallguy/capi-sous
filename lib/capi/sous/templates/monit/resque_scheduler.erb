@@ -1,0 +1,12 @@
+<% 
+	pid		= resque_scheduler_pid
+	name	= resque_scheduler_name
+	log		= resque_scheduler_log
+	user	= resque_scheduler_user
+%>
+check process <%= name %> with pidfile <%= pid %>
+  start program = "/usr/bin/env HOME=/home/<%= user %> /bin/bash -c 'source $HOME/.rvm/scripts/rvm; cd <%= current_path %>; nohup bundle exec rake environment resque:scheduler RAILS_ENV=production VERBOSE=1 PIDFILE=<%= pid %> >> <%= log %> 2>&1'" as uid <%= user %> and gid <%= user %> timeout 120 seconds
+  stop program = "/bin/bash -c 'cd <%= current_path %> && kill -s QUIT $(cat <%= pid %>) && rm -f <%= pid %>; exit 0'"
+  if totalmem is greater than 300 MB for 10 cycles then restart
+  if 5 restarts within 5 cycles then timeout
+  if changed pid 2 times within 60 cycles then alert

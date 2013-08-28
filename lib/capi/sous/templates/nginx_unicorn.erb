@@ -1,0 +1,76 @@
+upstream <%= safe_application_path %>_unicorn {
+  server unix:/tmp/unicorn.<%= safe_application_path %>.sock fail_timeout=0;
+}
+
+<% if use_ssl %>
+# Force SSL only
+server {
+  server_name <%= domain_name %>;
+  return 302 https://<%= domain_name %>$request_uri;
+}
+<% end %>
+
+server {
+  <% if use_ssl %>
+  listen 443 ssl;
+  ssl_certificate       certificates/<%= safe_application_path %>/server.crt;
+  ssl_certificate_key   certificates/<%= safe_application_path %>/server.key;
+
+
+  <% else %>
+#  listen 80 default deferred;
+  <% end %>
+
+  server_name <%= domain_name %>;
+  root <%= current_path %>/public;
+
+  gzip on;
+
+  if (-f $document_root/system/maintenance.html) {
+    return 503;
+  }
+  error_page 503 @maintenance;
+  location @maintenance {
+    rewrite  ^(.*)$  /system/maintenance.html last;
+    break;
+  }
+
+  location ^~ /assets/ {
+    gzip_static on;
+    expires max;
+    add_header Cache-Control public;
+    add_header X-Content-Type-Options nosniff;
+    access_log off;
+    gzip_vary on;
+  }
+
+  try_files $uri/index.html $uri @<%= safe_application_path %>_unicorn;
+
+  # Black list these paths cause they're being pinged from hackers.
+  location ~* ^/(stripehooks|callbacks/geo|\.php|realtime) {
+    rewrite .* http://$remote_addr redirect;
+    break;
+    return 500;
+  }
+
+  location @<%= safe_application_path %>_unicorn {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+    proxy_pass http://<%= safe_application_path %>_unicorn;
+  }
+
+  error_page 500 502 503 504 /500.html;
+  client_max_body_size 4G;
+  keepalive_timeout 10;
+
+  if (-f $document_root/system/maintenance.html) {
+    return 503;
+  }
+  error_page 503 @maintenance;
+  location @maintenance {
+    rewrite  ^(.*)$  /system/maintenance.html last;
+    break;
+  }
+}

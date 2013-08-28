@@ -1,0 +1,44 @@
+error_log /var/log/nginx/error.log;
+pid /var/run/nginx.pid;
+
+worker_processes 4;
+user www-data www-data;
+
+events {
+  worker_connections 256;
+  accept_mutex off; # "on" if nginx worker_processes > 1
+  multi_accept on;
+}
+
+http {
+  access_log /var/log/nginx/access.log combined;
+
+  include mime.types;
+  default_type application/octet-stream;
+
+  sendfile on;
+
+  tcp_nopush on; # off may be better for *some* Comet/long-poll stuff
+  tcp_nodelay on; # on may be better for some Comet/long-poll stuff
+
+  gzip on;
+  gzip_http_version 1.0;
+  gzip_proxied any;
+  gzip_min_length 500;
+  gzip_disable "MSIE [1-6]\.";
+
+  # text/html is always compressed, no need to include it.
+  gzip_types text/plain text/xml text/css
+             text/comma-separated-values
+             text/javascript application/x-javascript
+             application/json
+             application/atom+xml;
+
+
+  ssl_session_cache     shared:SSL:5m;
+  ssl_session_timeout   5m;
+  ssl_protocols         SSLv3 TLSv1;
+
+  include /etc/nginx/conf.d/*.conf;
+  include /etc/nginx/sites-enabled/*;
+}

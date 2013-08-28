@@ -1,0 +1,13 @@
+production:
+  sessions:
+    default:
+      database: <%= mongoid_db_name %>
+      hosts:
+        - <%= mongoid_server %>
+      options:
+        safe: true
+
+  options:
+    identity_map_enabled: true
+    preload_models: true
+    use_utc: true

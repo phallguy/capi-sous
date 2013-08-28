@@ -1,0 +1,21 @@
+#!/bin/bash
+
+CMD_ROOT=<%= db_path %>/mongodb
+KEEP=3
+
+cd $CMD_ROOT
+
+THEDATE=`date +%s`
+
+THEARCHIVE=mongo-$THEDATE.tgz
+
+# Backup datbase
+rm -rf dump/
+mongodump
+tar czf $THEARCHIVE dump/
+
+# Upload backups to rackspace cloud storage
+s3cmd put $THEARCHIVE s3://<%= s3_backups_bucket %>/mongodb/$THEARCHIVE
+
+# Remove old backup files
+find . -maxdepth 1 -type f -name "mongo-*.tgz" | xargs -x ls -t | awk "NR>$KEEP" | xargs -L1 rm -f

@@ -1,0 +1,23 @@
+<%= shared_path %>/log/*.log {
+    weekly
+    size=20M
+    missingok
+    rotate 6
+    compress
+    delaycompress
+    notifempty
+    copytruncate
+}
+
+<% if memcached_available %>
+/var/log/memcached/memcached.log {
+    weekly
+    size=20M
+    missingok
+    rotate 6
+    compress
+    delaycompress
+    notifempty
+    copytruncate
+}
+<% end %>
