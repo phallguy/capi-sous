@@ -1,3 +1,6 @@
+Capistrano::Configuration.instance.load do
+
+
 namespace :deploy do
   namespace :release do
 
@@ -16,4 +19,6 @@ namespace :deploy do
     before "deploy:finalize_update", "deploy:release:force_asset_symlink"
 
   end
+end
+
 end
