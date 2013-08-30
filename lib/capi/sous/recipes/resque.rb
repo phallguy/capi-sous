@@ -18,6 +18,7 @@ namespace :resque do
   task :setup, roles: :resque do
   end
   after "deploy:setup", "resque:setup"
+  after "monit:services", "monit:resque"
 
   %w[start stop restart].each do |command|
     desc "#{command} resque"

@@ -19,9 +19,11 @@ namespace :redis do
     template "redis_init.erb", "/tmp/redis_init"
 
     run "#{sudo} useradd -d /var/lib/redis -M -s /bin/false redis || true"
-    run "#{sudo} mkdir -p /var/lib/redis; #{sudo} chown redis:redis /var/lib/redis"
+    ["/var/lib/redis","/etc/redis","/var/log/redis"].each do |folder|
+      run "#{sudo} mkdir -p #{folder}; #{sudo} chown redis:redis #{folder}"
+    end
 
-    run "#{sudo} mv /tmp/redis_conf /etc/redis/redis.conf"
+    run " #{sudo} mv /tmp/redis_conf /etc/redis/redis.conf"
     run "chmod +x /tmp/redis_init; #{sudo} mv /tmp/redis_init /etc/init.d/redis-server; #{sudo} update-rc.d -f redis-server defaults"
 
 
@@ -30,6 +32,7 @@ namespace :redis do
     restart
   end
   after "deploy:setup", "redis:setup"
+  after "monit:services", "monit:redis"
 
   %w[start stop restart].each do |command|
     desc "#{command} redis"

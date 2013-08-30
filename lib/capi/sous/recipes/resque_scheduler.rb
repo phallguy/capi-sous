@@ -15,6 +15,7 @@ namespace :resque_scheduler do
   task :setup, roles: :resque_scheduler do
   end
   after "deploy:setup", "resque_scheduler:setup"
+  after "monit:services", "monit:resque_scheduler"
 
   %w[start stop restart].each do |command|
     desc "#{command} resque_scheduler"
