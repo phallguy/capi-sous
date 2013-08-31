@@ -1,6 +1,6 @@
 Capistrano::Configuration.instance.load do
 
-set_default(:mongoid_db_name) { application.gsub /-\w{2,3}+$/, "" }
+set_default(:mongoid_db_name) { application_namespace.gsub /-\w{2,3}+$/, "" }
 set_default(:mongoid_server) { "localhost:27017" }
 
 namespace :mongoid do

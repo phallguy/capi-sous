@@ -1,19 +1,25 @@
+def safe_name(name)
+  name && name.gsub(/[^a-z0-9]/, '_')
+end
+
 Capistrano::Configuration.instance.load do
 
 set_default :required_pkgs, %W{ git git-core htop unattended-upgrades tcl imagemagick s3cmd htop }
 set_default( :deploy_root ){ "/srv" }
 set_default( :db_path ){ "#{deploy_root}/db" }
 set_default( :backups_path ){ "#{deploy_root}/backups" }
-set_default( :s3_bucket_prefix ){ safe_application.gsub(/_/, '-') }
+set_default( :s3_bucket_prefix ){ safe_application_namespace.gsub(/_/, '-') }
 set_default( :s3_backups_bucket ){ "#{s3_bucket_prefix}-backups" }
 set_default :maintenance_template_path, File.expand_path("../templates/maintenance.html.erb", __FILE__)
 
-set_default( :safe_application ) { application.gsub(/[^a-z0-9]/, '_') }
+set_default( :safe_application ) { safe_name( application ) }
 set_default( :application_path ){ "#{application}_#{deploy_env}" }
-set_default( :safe_application_path ){ application_path.gsub(/[^a-z0-9]/, '_') }
+set_default( :safe_application_path ){ safe_name( application_path ) }
 set( :deploy_to ){ "#{deploy_root}/apps/#{safe_application_path}" }
 
 set_default( :vpc_domain_name ){ "vpc.#{domain_name}" }
+set_default( :application_namespace ){ application }
+set_default( :safe_application_namespace ){ safe_name( application_namespace ) }
 
 
 
