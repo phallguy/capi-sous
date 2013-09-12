@@ -20,7 +20,7 @@ set( :deploy_to ){ "#{deploy_root}/apps/#{safe_application_path}" }
 set_default( :vpc_domain_name ){ "vpc.#{domain_name}" }
 set_default( :application_namespace ){ application }
 set_default( :safe_application_namespace ){ safe_name( application_namespace ) }
-
+set_default( :rails_env ) { "production" }
 
 
 namespace :deploy do
