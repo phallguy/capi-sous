@@ -5,6 +5,7 @@ namespace :nginx do
   # Use SSL by default for all NGINX connectiosn.
   set_default :use_ssl, true
   set_default :ssl_ip_address, false
+  set_default :ssl_provider, "startssl"
 
   desc "Install nginx"
   task :install, roles: :web do
@@ -48,8 +49,8 @@ namespace :nginx do
     end
 
     task :publish, roles: :web do
-      certs_path = File.expand_path( "../../certs/startssl", __FILE__ )
-      `cat #{local_certs_path}/server.pem #{certs_path}/sub.class1.server.ca.pem #{certs_path}/ca.pem > /tmp/server.crt`
+      certs_path = File.expand_path( "../../certs/#{ssl_provider}", __FILE__ )
+      `cat #{local_certs_path}/server.pem #{certs_path}/*.pem > /tmp/server.crt`
       upload "/tmp/server.crt", "/tmp/server.crt"
       run "#{sudo} mv /tmp/server.crt /etc/nginx/certificates/#{safe_application_path}/server.crt"
       `rm /tmp/server.crt`
