@@ -26,6 +26,4 @@ Gem::Specification.new do |s|
   s.add_dependency "capistrano", ">= 2.5.9"
   s.add_dependency 'capistrano-fanfare'
   s.add_dependency 'rvm-capistrano'
-  s.add_dependency 'pry'
-
 end
