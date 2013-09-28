@@ -8,7 +8,7 @@ set eventqueue
     basedir /var/lib/monit/events
     slots 100
 
-set mailserver smtp.gmail.com port 587
+set mailserver <%= monit_email_server %> port 587
      username "<%= monit_service_email %>" password "<%= monit_service_email_password %>"
      using tlsv1
      with timeout 30 seconds

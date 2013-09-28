@@ -2,6 +2,7 @@ Capistrano::Configuration.instance.load do
 
 set_default( :monit_alert_email ){ "ops@#{domain_name}" }
 set_default( :monit_service_email ){ "services@#{domain_name}" }
+set_default( :monit_email_server ){ "smtp.gmail.com" }
 
 namespace :monit do
   desc "Install Monit"
