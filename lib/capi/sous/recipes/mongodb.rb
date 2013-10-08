@@ -18,7 +18,7 @@ namespace :mongodb do
     template "mongodb.conf.erb", "/tmp/mongodb_conf"
     run "#{sudo} mv /tmp/mongodb_conf /etc/mongodb.conf; #{sudo} mkdir -p #{mongo_db_path}; #{sudo} chown mongodb:mongodb #{mongo_db_path}; #{sudo} mkdir -p #{backups_path}/mongo"
     template "backup_mongo.erb", "/tmp/backup_mongo"
-    run "#{sudo} mv /tmp/backup_mongo /root/backup_mongo; #{sudo} chmod u+x /root/backup_mongo; #{sudo} crontab -l; echo '0 3 * * * ~/backup-mongo  >> #{backups_path}/mongo/log.txt' | #{sudo} crontab"
+    run "#{sudo} mv /tmp/backup_mongo /etc/cron.daily/backup_mongo; #{sudo} chmod u+x /etc/cron.daily/root/backup_mongo;"
 
     restart
   end

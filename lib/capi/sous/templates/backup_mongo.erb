@@ -1,6 +1,7 @@
 #!/bin/bash
 
 CMD_ROOT=<%= db_path %>/mongodb
+BACKUP_ROOT=<%= backups_path %>/mongo
 KEEP=3
 
 cd $CMD_ROOT
@@ -12,7 +13,9 @@ THEARCHIVE=mongo-$THEDATE.tgz
 # Backup datbase
 rm -rf dump/
 mongodump
-tar czf $THEARCHIVE dump/
+tar czf $BACKUP_ROOT/$THEARCHIVE dump/
+
+cd $BACKUP_ROOT
 
 # Upload backups to rackspace cloud storage
 s3cmd put $THEARCHIVE s3://<%= s3_backups_bucket %>/mongodb/$THEARCHIVE

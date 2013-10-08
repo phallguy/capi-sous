@@ -1,4 +1,5 @@
 Capistrano::Configuration.instance.load do
+set_default(:nginx_certificates_path){ "/etc/nginx/certificates/#{safe_application_path}"}
 
 namespace :nginx do
 
@@ -19,6 +20,7 @@ namespace :nginx do
     template "nginx_unicorn.erb", "/tmp/nginx_conf"
     run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-enabled/#{safe_application_path}"
     run "#{sudo} rm -f /etc/nginx/sites-enabled/default"
+    nginx.ssl.push
   end
   after "deploy:setup", "nginx:setup"
   after "monit:services", "monit:nginx"
@@ -45,16 +47,29 @@ namespace :nginx do
       csr = "/tmp/#{safe_application_path}.csr"
       download "/tmp/server.csr", "#{local_certs_path}/server.csr"
       download "/tmp/server.key", "#{local_certs_path}/server.key"
-      run "#{sudo} mkdir -p /etc/nginx/certificates/#{safe_application_path} && #{sudo} mv -f /tmp/server.key /etc/nginx/certificates/#{safe_application_path}/server.key && #{sudo} mv -f /tmp/server.csr /etc/nginx/certificates/#{safe_application_path}/server.csr"
+      run "#{sudo} mkdir -p #{nginx_certificates_path} && #{sudo} mv -f /tmp/server.key #{nginx_certificates_path}/server.key && #{sudo} mv -f /tmp/server.csr #{nginx_certificates_path}/server.csr"
     end
 
     task :publish, roles: :web do
       certs_path = File.expand_path( "../../certs/#{ssl_provider}", __FILE__ )
-      `cat #{local_certs_path}/server.pem #{certs_path}/*.pem > /tmp/server.crt`
-      upload "/tmp/server.crt", "/tmp/server.crt"
-      run "#{sudo} mv /tmp/server.crt /etc/nginx/certificates/#{safe_application_path}/server.crt"
-      `rm /tmp/server.crt`
-      nginx.restart
+      if File.exists?("#{local_certs_path}/server.pem")
+        `cat #{local_certs_path}/server.pem #{certs_path}/*.pem > /tmp/server.crt`
+        upload "/tmp/server.crt", "/tmp/server.crt"
+        run "#{sudo} mv /tmp/server.crt #{nginx_certificates_path}/server.crt"
+        `rm /tmp/server.crt`
+        nginx.restart
+      end
+    end
+
+    task :push, roles: :web do
+      certs_path = File.expand_path( "../../certs/#{ssl_provider}", __FILE__ )
+      run "#{sudo} mkdir -p #{nginx_certificates_path}"
+
+      if File.exists?("#{local_certs_path}/server.key")
+        upload "#{local_certs_path}/server.key", "/tmp/server.key"
+        sudo "#{sudo} mv /tmp/server.key #{nginx_certificates_path}/server.key"
+      end
+      publish
     end
   end
 end
