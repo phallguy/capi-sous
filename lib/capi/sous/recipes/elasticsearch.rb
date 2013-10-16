@@ -31,9 +31,7 @@ namespace :elasticsearch do
   desc "Import "
   task :import, :roles => :app do
     host = find_servers_for_task(current_task).first.host
-    indices.each do |index|
-      run "cd #{current_path}; bundle exec rake RAILS_ENV=#{rails_env} rebuild_search_index", hosts: host
-    end
+    run "cd #{current_path}; bundle exec rake RAILS_ENV=#{rails_env} rebuild_search_index", hosts: host
   end
 
 end
