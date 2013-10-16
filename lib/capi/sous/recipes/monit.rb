@@ -32,6 +32,7 @@ namespace :monit do
   task(:resque, roles: :resque) { monit_config "resque" }
   task(:resque_scheduler, roles: :resque_scheduler) { monit_config "resque_scheduler" }
   task(:redis, roles: :redis) { monit_config "redis" }
+  task(:elasticsearch, roles: :elasticsearch) { monit_config "elasticsearch" }
 
   task :services do
   end
