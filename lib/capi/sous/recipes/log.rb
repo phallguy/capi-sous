@@ -6,8 +6,8 @@ namespace :log do
   task :setup, roles: :app do
     
     template "logrotate.erb", "/tmp/logrotate"
-    file = "/tmp/logrotate /etc/logrotate.d/#{safe_application_path}"
-    run "#{sudo} mv -f #{file} && #{sudo} chmod g-w #{file} && #{sudo} chmod g-w #{shared_path}/log"
+    file = "/etc/logrotate.d/#{safe_application_path}"
+    run "#{sudo} mv -f /tmp/logrotate #{file} && #{sudo} chmod g-w #{file} && #{sudo} chmod g-w #{shared_path}/log"
 
   end
   after "deploy:setup", "log:setup"  
