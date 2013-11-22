@@ -10,6 +10,7 @@ set_default( :db_path ){ "#{deploy_root}/db" }
 set_default( :backups_path ){ "#{deploy_root}/backups" }
 set_default( :s3_bucket_prefix ){ safe_application_namespace.gsub(/_/, '-') }
 set_default( :s3_backups_bucket ){ "#{s3_bucket_prefix}-backups" }
+set_default( :s3_backups ){ true }
 set_default :maintenance_template_path, File.expand_path("../templates/maintenance.html.erb", __FILE__)
 
 set_default( :safe_application ) { safe_name( application ) }
@@ -58,12 +59,13 @@ namespace :deploy do
   before "deploy:setup", "deploy:setup_apps_dir"
 
   task :setup_backups do
+    if s3_backups
+      set :aws_access_key, Capistrano::CLI.ui.ask("AWS Key: ")
+      set :aws_secret_key, Capistrano::CLI.ui.ask("AWS Secret: ")
 
-    set :aws_access_key, Capistrano::CLI.ui.ask("AWS Key: ")
-    set :aws_secret_key, Capistrano::CLI.ui.ask("AWS Secret: ")
-
-    template "s3cfg.erb", "/tmp/s3cfg"
-    run "#{sudo} mkdir -p #{backups_path}; #{sudo} mv /tmp/s3cfg /root/.s3cfg"
+      template "s3cfg.erb", "/tmp/s3cfg"
+      run "#{sudo} mkdir -p #{backups_path}; #{sudo} mv /tmp/s3cfg /root/.s3cfg"
+    end
   end
   before "deploy:setup", "deploy:setup_backups"
 end
