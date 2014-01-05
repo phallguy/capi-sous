@@ -39,6 +39,8 @@ http {
   ssl_session_timeout   5m;
   ssl_protocols         SSLv3 TLSv1;
 
+  types_hash_max_size 2048;
+
   include /etc/nginx/conf.d/*.conf;
   include /etc/nginx/sites-enabled/*;
 }

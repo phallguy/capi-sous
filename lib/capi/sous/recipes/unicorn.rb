@@ -9,6 +9,7 @@ set_default(:unicorn_autostart){ true }
 
 set :unicorn_env, {
     "RUBY_HEAP_MIN_SLOTS"           => 1250000,
+    "RUBY_GC_HEAP_INIT_SLOTS"       => 1250000,
     "RUBY_HEAP_SLOTS_INCREMENT"     => 300000,
     "RUBY_HEAP_SLOTS_GROWTH_FACTOR" => 1,
     "RUBY_GC_MALLOC_LIMIT"          => 80000000,

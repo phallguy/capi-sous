@@ -4,7 +4,7 @@ end
 
 Capistrano::Configuration.instance.load do
 
-set_default :required_pkgs, %W{ git git-core htop unattended-upgrades tcl imagemagick s3cmd htop }
+set_default :required_pkgs, %W{ git git-core htop unattended-upgrades tcl imagemagick s3cmd htop python-software-properties }
 set_default( :deploy_root ){ "/srv" }
 set_default( :db_path ){ "#{deploy_root}/db" }
 set_default( :backups_path ){ "#{deploy_root}/backups" }
