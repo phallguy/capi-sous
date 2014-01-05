@@ -22,7 +22,7 @@ namespace :firewall do
     end
 
     task :setup_defaults do
-      run "echo 'y' | #{sudo} ufw reset && #{sudo} ufw default deny incoming && #{sudo} ufw allow ssh"
+      run "echo 'y' | #{sudo} ufw reset && #{sudo} ufw default deny incoming && #{sudo} ufw default allow outgoing && #{sudo} ufw allow ssh"
     end
 
     task :open_ports do
