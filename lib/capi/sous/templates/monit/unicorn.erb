@@ -7,7 +7,7 @@ check process <%= safe_application_path %>_unicorn with pidfile <%= unicorn_pid 
   <% pid = unicorn_pid.sub(".pid", ".#{n}.pid") %>
   check process <%= safe_application_path %>_unicorn_worker_<%= n %> with pidfile <%= pid %>
     start program = "/bin/true"
-    stop program = "/usr/bin/test -s <%= pid %> && /bin/kill -QUIT `cat <%= pid %>`"
+    stop program = "/bin/sh -c 'cd <%= current_path %> && kill -s QUIT `cat <%= pid %>` && rm -f <%= pid %>; exit 0;'"
     if mem > 300.0 MB for 2 cycles then restart
     if cpu > 50% for 3 cycles then restart
     if 5 restarts within 5 cycles then timeout

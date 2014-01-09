@@ -64,6 +64,7 @@ namespace :deploy do
       set :aws_secret_key, Capistrano::CLI.ui.ask("AWS Secret: ")
 
       template "s3cfg.erb", "/tmp/s3cfg"
+      run "cp /tmp/s3cfg ~/.s3cfg"
       run "#{sudo} mkdir -p #{backups_path}; #{sudo} mv /tmp/s3cfg /root/.s3cfg"
     end
   end

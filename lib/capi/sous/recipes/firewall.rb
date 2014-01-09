@@ -35,11 +35,11 @@ namespace :firewall do
   end
 
   task :enable do
-    run "echo 'y' | #{sudo} ufw enable && #{sudo} ufw status"
+    run "echo 'y' | #{sudo} ufw enable && #{sudo} ufw status verbose"
   end
 
   task :disable do
-    run "echo 'y' | #{sudo} ufw disable && #{sudo} ufw status"
+    run "echo 'y' | #{sudo} ufw disable && #{sudo} ufw status verbose"
   end
 
 

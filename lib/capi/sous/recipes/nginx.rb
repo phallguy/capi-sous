@@ -7,6 +7,7 @@ namespace :nginx do
   set_default :use_ssl, true
   set_default :ssl_ip_address, false
   set_default :ssl_provider, "startssl"
+  set_default :nginx_worker_processes, 4
 
   desc "Install nginx"
   task :install, roles: :web do

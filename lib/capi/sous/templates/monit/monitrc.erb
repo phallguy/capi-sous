@@ -5,22 +5,22 @@ set idfile /var/lib/monit/id
 set statefile /var/lib/monit/state
 
 set eventqueue
-    basedir /var/lib/monit/events
-    slots 100
+	basedir /var/lib/monit/events
+	slots 100
 
 set mailserver <%= monit_email_server %> port 587
-     username "<%= monit_service_email %>" password "<%= monit_service_email_password %>"
-     using tlsv1
-     with timeout 30 seconds
+	username "<%= monit_service_email %>" password "<%= monit_service_email_password %>"
+	using tlsv1
+	with timeout 30 seconds
 
-set alert <%= monit_alert_email %> not { instance action pid ppid }
+set alert <%= monit_alert_email %>
 
 set httpd port 2812
-    allow admin:"supersecret"
+	allow admin:"supersecret"
 
 check system server
-  if loadavg(5min) > 2 for 10 cycles then alert
-  if memory > 90% for 2 cycles then alert
-  if cpu(user) > 75% for 30 cycles then alert
+	if loadavg(5min) > 2 for 10 cycles then alert
+	if memory > 90% for 2 cycles then alert
+	if cpu(user) > 75% for 30 cycles then alert
 
 include /etc/monit/conf.d/*
