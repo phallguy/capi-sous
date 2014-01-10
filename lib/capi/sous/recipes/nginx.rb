@@ -57,7 +57,7 @@ namespace :nginx do
         `cat #{local_certs_path}/server.pem #{certs_path}/*.pem > /tmp/server.crt`
         upload "/tmp/server.crt", "/tmp/server.crt"
         run "#{sudo} mv /tmp/server.crt #{nginx_certificates_path}/server.crt"
-        `rm /tmp/server.crt`
+        #{}`rm /tmp/server.crt`
         nginx.restart
       end
     end
