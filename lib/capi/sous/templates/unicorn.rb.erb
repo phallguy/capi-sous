@@ -37,4 +37,8 @@ after_fork do |server, worker|
   if defined?(Analytics) || defined?(AnalyticsRuby)
     load "<%= current_path %>/config/initializers/analytics-ruby.rb"
   end
+
+  if defined?(Resque)
+    Resque.redis.client.reconnect
+  end
 end
