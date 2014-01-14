@@ -21,7 +21,7 @@ Capi-sous is a recipe book for use with the [Capistrano Gem](https://github.com/
 
     sous_recipes %W{ monit dotfiles settings rvm nginx unicorn nodejs check mongodb mongoid memcached assets search }
 
-    set :ec2_pem_file, "~/.ssh/acme.pem"
+    set :ssh_pem_file, "~/.ssh/acme.pem"
     set :application, "acme-com"
     set :domain_name, "acme.com"
     set :repository,  "git@github.org:acme/acme-com.git"

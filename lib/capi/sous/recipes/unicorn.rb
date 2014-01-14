@@ -18,7 +18,7 @@ set :unicorn_env, {
 
 namespace :unicorn do
   desc "Setup Unicorn initializer and app configuration"
-  task :setup, roles: :unicorn, except: { no_release: true } do
+  task :setup, roles: :unicorn, except: { no_release: true }, :on_no_matching_servers => :continue do
     run "#{sudo} mkdir -p #{shared_path}/config && #{sudo} chown -R #{user}:#{user} #{shared_path}/.."
 
     template "unicorn.rb.erb", unicorn_config
@@ -32,14 +32,14 @@ namespace :unicorn do
   
   %w[start restart stop upgrade].each do |command|
     desc "#{command} unicorn"
-    task command, roles: :unicorn do
+    task command, roles: :unicorn, except: { no_release: true }, :on_no_matching_servers => :continue do
       run "service unicorn_#{safe_application_path} #{command}"
     end
     after "deploy:#{command}", "unicorn:#{command}"
   end
 
   %W{unmonitor monitor}.each do |command|
-    task( command, roles: :unicorn ) do
+    task( command, roles: :unicorn, except: { no_release: true }, :on_no_matching_servers => :continue ) do
       run "#{sudo} monit #{command} #{safe_application_path}_unicorn"
       unicorn_workers.times.each do |worker|
         run "#{sudo} monit #{command} #{safe_application_path}_unicorn_worker_#{worker}"

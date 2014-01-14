@@ -11,13 +11,20 @@ namespace :bootstrap do
 	end
 
 	set_default :ec2_root_user, "ubuntu"
+	set_default :digitalocean_root_user, "root"
+
+	set_default :vps_provider, :digitalocean
+
+	set_default( :root_user ) {
+		vps_provider == :ec2 ? ec2_root_user : digitalocean_root_user
+	}
 
 
 	task :copy_ssh_keys do
 		ssh_path = "/home/#{user}/.ssh"
 		key_file = "#{ssh_path}/authorized_keys"
 		find_servers_for_task(current_task).each do |server|
-			`cat ~/.ssh/id_rsa.pub | ssh -i #{ec2_pem_file} #{ec2_root_user}@#{server} 'cat - > /tmp/authorized_keys; sudo useradd -m -s /bin/bash #{user} || true; sudo mkdir -p #{ssh_path}; sudo mv -f /tmp/authorized_keys #{key_file}; sudo chown #{user}:#{user} -R #{ssh_path}; sudo chmod 0600 #{key_file}; sudo sh -c "echo 127.0.0.1 $(hostname) >> /etc/hosts" '`
+			`cat ~/.ssh/id_rsa.pub | ssh -i #{ssh_pem_file} #{root_user}@#{server} 'cat - > /tmp/authorized_keys; sudo useradd -m -s /bin/bash #{user} || true; sudo mkdir -p #{ssh_path}; sudo mv -f /tmp/authorized_keys #{key_file}; sudo chown #{user}:#{user} -R #{ssh_path}; sudo chmod 0600 #{key_file}; sudo sh -c "echo 127.0.0.1 $(hostname) >> /etc/hosts" '`
 		end
 		tmp = "/tmp/sudoer_for_user"
 		sudoers = "/etc/sudoers.d/#{user}"
@@ -27,7 +34,7 @@ namespace :bootstrap do
 		end
 		pwd = Capistrano::CLI.ui.ask "Password for deploy user: "
 		find_servers_for_task(current_task).each do |server|
-			`ssh -i #{ec2_pem_file} #{ec2_root_user}@#{server} 'sudo mv #{tmp} #{sudoers}; sudo chmod 0440 #{sudoers}; sudo chown root:root #{sudoers}; sudo passwd #{user} <<EOF
+			`ssh -i #{ssh_pem_file} #{root_user}@#{server} 'sudo mv #{tmp} #{sudoers}; sudo chmod 0440 #{sudoers}; sudo chown root:root #{sudoers}; sudo passwd #{user} <<EOF
 #{pwd}
 #{pwd}
 EOF'`
