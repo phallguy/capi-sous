@@ -1,7 +1,8 @@
 Capistrano::Configuration.instance.load do
 
 set_default( :elasticsearch_cluster_name ) { application_namespace.gsub /-\w{2,3}+$/, "" }
-set_default( :elasticsearch_server ) { "localhost:9200" }
+set_default( :elasticsearch_server ) { "elasticsearch.#{vpc_domain_name}:9200" }
+set_default( :elasticsearch_url ) { "http://#{elasticsearch_server}" }
 set_default( :elasticsearch_path ){ "#{deploy_root}/elasticsearch" }
 
 namespace :elasticsearch do
