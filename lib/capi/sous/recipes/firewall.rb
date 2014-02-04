@@ -12,9 +12,7 @@ namespace :firewall do
     task :default do
       disable_rvm_shell do
         install_ufw
-        setup_defaults
-        open_ports
-        firewall.enable
+        firewall.reset
       end
     end
     after "deploy:install", "firewall:install"
