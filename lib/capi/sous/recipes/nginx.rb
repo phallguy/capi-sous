@@ -41,10 +41,15 @@ namespace :nginx do
 
   namespace :ssl do
     set_default( :local_certs_path ){ "#{rails_root}/config/certs"}
+    set_default( :ssl_country ){ "US" }
+    set_default( :ssl_state ){ "California" }
+    set_default( :ssl_city ){ "Murietta" }
+    
+
 
     task :generate_csr, roles: :web do
       `mkdir -p #{local_certs_path}`
-      run %|cd /tmp && openssl req -nodes -newkey rsa:2048 -nodes -keyout server.key -out server.csr -subj "/C=US/ST=California/L=Murietta/O=RESC/OU=IT/CN=#{domain_name}"|
+      run %|cd /tmp && openssl req -nodes -newkey rsa:2048 -nodes -keyout server.key -out server.csr -subj "/C=#{ssl_country}/ST=#{ssl_state}/L=#{ssl_city}/O=#{ssl_organization}/OU=IT/CN=#{domain_name}"|
       csr = "/tmp/#{safe_application_path}.csr"
       download "/tmp/server.csr", "#{local_certs_path}/server.csr"
       download "/tmp/server.key", "#{local_certs_path}/server.key"

@@ -42,7 +42,7 @@ namespace :unicorn do
     task( command, roles: :unicorn, except: { no_release: true }, :on_no_matching_servers => :continue ) do
       run "#{sudo} monit #{command} #{safe_application_path}_unicorn"
       unicorn_workers.times.each do |worker|
-        run "#{sudo} monit #{command} #{safe_application_path}_unicorn_worker_#{worker}"
+        run "#{sudo} monit #{command} #{safe_application_path}_unicorn_worker_#{worker} || true"
       end
     end
   end

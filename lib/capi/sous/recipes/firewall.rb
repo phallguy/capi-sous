@@ -42,7 +42,14 @@ namespace :firewall do
 
   end
 
+  task :reset do
+    install.setup_defaults
+    enable
+  end
+
   task :enable do
+    install.enable_safe_ips
+    install.open_ports
     run "echo 'y' | #{sudo} ufw enable && #{sudo} ufw status verbose"
   end
 
