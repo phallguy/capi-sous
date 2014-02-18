@@ -5,6 +5,7 @@ end
 Capistrano::Configuration.instance.load do
 
 set_default :required_pkgs, %W{ git git-core htop unattended-upgrades tcl imagemagick s3cmd htop python-software-properties }
+set_default :additional_pkgs, []
 set_default( :deploy_root ){ "/srv" }
 set_default( :db_path ){ "#{deploy_root}/db" }
 set_default( :backups_path ){ "#{deploy_root}/backups" }
@@ -31,7 +32,7 @@ namespace :deploy do
     task :default do
       disable_rvm_shell do
         update_system
-        required_packages
+        packages
         unattended_upgrades
       end
     end
@@ -40,8 +41,17 @@ namespace :deploy do
       run "#{sudo} apt-get -y update"
     end
 
+    task :packages do
+      required_packages
+      additional_packages
+    end
+
     task :required_packages do
       run "#{sudo} apt-get -y install #{required_pkgs.join ' '}" if required_pkgs.any?      
+    end
+
+    task :additional_packages do
+      run "#{sudo} apt-get -y install #{additional_pkgs.join ' '}" if additional_pkgs.any?      
     end
 
     task :unattended_upgrades do
