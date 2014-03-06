@@ -8,12 +8,14 @@ namespace :bootstrap do
 		update_system
 		install_rsub
 		hostname
+		swapfile
 	end
 
 	set_default :ec2_root_user, "ubuntu"
 	set_default :digitalocean_root_user, "root"
 
 	set_default :vps_provider, :digitalocean
+	set_default :swap_file_size, 4096
 
 	set_default( :root_user ) {
 		vps_provider == :ec2 ? ec2_root_user : digitalocean_root_user
@@ -60,6 +62,17 @@ EOF'`
 				host = server.to_s.gsub(/\.[^.]*\.[^.]*$/, '').gsub(/\./,'-')
 				run "#{sudo} hostname #{host} && echo #{host} >> /tmp/hostname && #{sudo} mv -f /tmp/hostname /etc/hostname && cp -f /etc/hosts /tmp/hosts && echo 127.0.0.1 #{host} >> /tmp/hosts && #{sudo} mv -f /tmp/hosts /etc/hosts", hosts: server
 			end
+		end
+	end
+
+	# enable swap file
+	# https://www.digitalocean.com/community/articles/how-to-add-swap-on-ubuntu-12-04
+
+	task :swapfile do
+		disable_rvm_shell do
+			run "#{sudo} dd if=/dev/zero of=/swapfile bs=1024 count=#{swap_file_size}k && #{sudo} mkswap /swapfile && #{sudo} swapon /swapfile && cp -f /etc/fstab /tmp/fstap && echo /swapfile none swap sw 0 0 >> /tmp/fstab && #{sudo} mv -f /tmp/fstab /etc/fstab"
+			run "echo 10 | #{sudo} tee /proc/sys/vm/swappiness && echo vm.swappiness = 10 | #{sudo} tee -a /etc/sysctl.conf"
+			run "#{sudo} chown root:root /swapfile && #{sudo} chmod 0600 /swapfile"
 		end
 	end
 
