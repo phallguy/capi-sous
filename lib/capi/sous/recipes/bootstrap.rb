@@ -70,9 +70,11 @@ EOF'`
 
 	task :swapfile do
 		disable_rvm_shell do
-			run "#{sudo} dd if=/dev/zero of=/swapfile bs=1024 count=#{swap_file_size}k && #{sudo} mkswap /swapfile && #{sudo} swapon /swapfile && cp -f /etc/fstab /tmp/fstap && echo /swapfile none swap sw 0 0 >> /tmp/fstab && #{sudo} mv -f /tmp/fstab /etc/fstab"
-			run "echo 10 | #{sudo} tee /proc/sys/vm/swappiness && echo vm.swappiness = 10 | #{sudo} tee -a /etc/sysctl.conf"
-			run "#{sudo} chown root:root /swapfile && #{sudo} chmod 0600 /swapfile"
+			if swap_file_size && swap_file_size > 0
+				run "#{sudo} dd if=/dev/zero of=/swapfile bs=1024 count=#{swap_file_size}k && #{sudo} mkswap /swapfile && #{sudo} swapon /swapfile && cp -f /etc/fstab /tmp/fstap && echo /swapfile none swap sw 0 0 >> /tmp/fstab && #{sudo} mv -f /tmp/fstab /etc/fstab"
+				run "echo 10 | #{sudo} tee /proc/sys/vm/swappiness && echo vm.swappiness = 10 | #{sudo} tee -a /etc/sysctl.conf"
+				run "#{sudo} chown root:root /swapfile && #{sudo} chmod 0600 /swapfile"
+			end
 		end
 	end
 
