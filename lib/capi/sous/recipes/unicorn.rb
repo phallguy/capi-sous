@@ -46,11 +46,11 @@ namespace :unicorn do
       end
     end
   end
-  before "deploy:update_code", "unicorn:unmonitor"
-  after "deploy:finalize_update", "unicorn:monitor"
+  # before "deploy:update_code", "unicorn:unmonitor"
+  # after "deploy:finalize_update", "unicorn:monitor"
 
-  before "unicorn:restart", "unicorn:unmonitor"
-  after "unicorn:restart", "unicorn:monitor"
+  # before "unicorn:restart", "unicorn:unmonitor"
+  # after "unicorn:restart", "unicorn:monitor"
 
 
 end
