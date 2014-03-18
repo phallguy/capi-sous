@@ -9,6 +9,9 @@ namespace :bootstrap do
 		install_rsub
 		hostname
 		swapfile
+		create_deploy_keys
+		copy_deploy_keys
+		show_deploy_keys
 	end
 
 	set_default :ec2_root_user, "ubuntu"
@@ -16,6 +19,8 @@ namespace :bootstrap do
 
 	set_default :vps_provider, :digitalocean
 	set_default :swap_file_size, 4096
+	set_default( :deploy_keys ){ "~/.ssh/#{safe_application}_rsa" }
+	set( :expanded_deploy_keys ){ deploy_keys && File.expand_path( deploy_keys ) }
 
 	set_default( :root_user ) {
 		vps_provider == :ec2 ? ec2_root_user : digitalocean_root_user
@@ -42,6 +47,33 @@ namespace :bootstrap do
 EOF'`
 		end
 	end
+
+	task :copy_deploy_keys do
+		if deploy_keys = fetch(:expanded_deploy_keys,nil)
+			disable_rvm_shell do
+				upload deploy_keys, "/tmp/id_rsa"
+				run "mv /tmp/id_rsa ~/.ssh/id_rsa; chmod 0600 ~/.ssh/id_rsa"
+				pub_keys = "#{deploy_keys}.pub"
+				upload pub_keys, "/tmp/id_rsa.pub"
+				run "mv /tmp/id_rsa.pub ~/.ssh/id_rsa.pub; chmod 0600 ~/.ssh/id_rsa.pub"
+			end
+		end
+	end
+
+	task :create_deploy_keys do		
+		unless File.exist?(expanded_deploy_keys)
+			`ssh-keygen -C "Deploy keys for #{application}." -q -N "" -f #{expanded_deploy_keys} -t rsa`
+		end
+	end
+
+	task :show_deploy_keys do
+		puts "\n\nYOUR SSH PUBLIC DEPLOY KEYS\n\nRemember to add these to github or bitbucket for read-only access.\n\n"
+		keys = `cat #{expanded_deploy_keys}.pub`
+		puts keys
+		puts "\n\n"
+
+	end
+
 
 	task :update_system do
 		disable_rvm_shell do
