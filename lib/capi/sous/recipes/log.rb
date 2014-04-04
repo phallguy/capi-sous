@@ -2,7 +2,7 @@ Capistrano::Configuration.instance.load do
 
 namespace :log do
 
-  desc "Setup local app configuration, like passwords and other dynamic info"
+  desc "Setup log roll"
   task :setup, roles: :app do
     
     template "logrotate.erb", "/tmp/logrotate"

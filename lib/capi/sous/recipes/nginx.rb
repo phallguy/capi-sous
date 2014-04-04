@@ -8,6 +8,7 @@ namespace :nginx do
   set_default :ssl_ip_address, false
   set_default :ssl_provider, "startssl"
   set_default :nginx_worker_processes, 4
+  set_default :nginx_cache_path, "/var/lib/nginx/cache"
 
   desc "Install nginx"
   task :install, roles: :web do
@@ -18,6 +19,7 @@ namespace :nginx do
 
   desc "Setup nginx configuration for this application"
   task :setup, roles: :web do
+    setup_root
     template "nginx_unicorn.erb", "/tmp/nginx_conf"
     run "#{sudo} mv /tmp/nginx_conf /etc/nginx/sites-enabled/#{safe_application_path}"
     run "#{sudo} rm -f /etc/nginx/sites-enabled/default"
@@ -37,6 +39,11 @@ namespace :nginx do
     task command, roles: :web do
       run "#{sudo} service nginx #{command}"
     end
+  end
+
+  task :clear_cache, roles: :web do
+    run "#{sudo} rm -rf #{nginx_cache_path}"
+    restart
   end
 
   namespace :ssl do
